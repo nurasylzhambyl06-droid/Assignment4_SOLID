@@ -19,5 +19,18 @@ public class Prescription {
     public List<Medicine> getMedicines() {
         return medicines;
     }
+    private int id;
+    private List<PrescriptionItem> items;
+
+    public Prescription(int id, List<PrescriptionItem> items) {
+        this.id = id;
+        this.items = items;
+    }
+
+    public double calculateTotal() {
+        return items.stream()
+                .mapToDouble(PrescriptionItem::getTotalPrice)
+                .sum();
+    }
 }
 
