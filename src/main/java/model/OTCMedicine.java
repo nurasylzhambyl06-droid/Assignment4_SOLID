@@ -8,7 +8,7 @@ public class OTCMedicine extends BaseMedicine {
 
     @Override
     public double calculateFinalPrice() {
-        return 200.0;
+        return 800.0;
     }
 
     @Override

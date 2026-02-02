@@ -1,49 +1,74 @@
 package org.example;
 
-import db.DatabaseConnection;
-import model.BaseEntity;
-import model.Medicine;
-import repository.PatientRepository;
-import service.MedicineService;
-import service.PatientService;
+import controller.MedicineController;
+import dto.MedicineDTO;
+import model.BaseMedicine;
+import model.OTCMedicine;
+import model.PrescriptionMedicine;
+import repository.InMemoryMedicineRepository;
+import repository.interfaces.CrudRepository;
+import service.MedicineServiceImpl;
+import service.interfaces.MedicineService;
+import utils.ReflectionUtils;
+import utils.SortingUtils;
+import service.interfaces.PricedItem;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
 
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PatientRepository repo = new PatientRepository(con);
-        } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
+        CrudRepository<BaseMedicine> repository = new InMemoryMedicineRepository();
+        MedicineService service = new MedicineServiceImpl(repository);
+        MedicineController controller = new MedicineController(service);
+
+        MedicineDTO dto1 = new MedicineDTO(1, "Ibuprofen", "OTC");
+        MedicineDTO dto2 = new MedicineDTO(2, "Paracetamol", "OTC");
+        MedicineDTO dto3 = new MedicineDTO(3, "Amoxicillin", "PRESCRIPTION");
+
+        controller.createMedicine(map(dto1));
+        controller.createMedicine(map(dto2));
+        controller.createMedicine(map(dto3));
+
+        List<BaseMedicine> medicines = service.getAll();
+
+        for (BaseMedicine m : medicines) {
+            System.out.println(m.getDisplayName() + " " + m.calculateFinalPrice());
+        }
+
+        SortingUtils.sortByPrice(medicines);
+
+        for (BaseMedicine m : medicines) {
+            System.out.println(m.getDisplayName() + " " + m.calculateFinalPrice());
+        }
+
+        for (BaseMedicine m : medicines) {
+            PricedItem.printPrice(m.calculateFinalPrice());
         }
 
 
-        PatientService patientService = new PatientService();
-        MedicineService medicineService = new MedicineService();
+        ReflectionUtils.inspectClass(OTCMedicine.class);
+        ReflectionUtils.inspectClass(PrescriptionMedicine.class);
 
         try {
-            for (BaseEntity p : patientService.getAllPatients()) {
-                System.out.println(p.getInfo());
-            }
-
-            for (BaseEntity m : medicineService.getAllMedicines()) {
-                System.out.println(m.getInfo());
-            }
-
+            MedicineDTO badDto = new MedicineDTO(4, "", "OTC");
+            controller.createMedicine(map(badDto));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        BaseEntity entity = new Medicine(99, "TestMed", 100.0);
-        System.out.println(entity.getInfo());
-
-        MedicineService service = new MedicineService();
-        Medicine m = service.getMostExpensiveMedicine();
-
-        System.out.println(m.getName() + " " + m.getPrice());
     }
+
+    private static BaseMedicine map(MedicineDTO dto) {
+        if (dto.getName() == null || dto.getName().isBlank()) {
+            throw new RuntimeException("Medicine name cannot be empty");
+        }
+        if ("OTC".equalsIgnoreCase(dto.getType())) {
+            return new OTCMedicine(dto.getId(), dto.getName());
+        }
+        return new PrescriptionMedicine(dto.getId(), dto.getName(), true);
+    }
+
 }
+
 
