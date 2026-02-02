@@ -176,6 +176,7 @@ The `Main` class demonstrates:
 - Lambda-based sorting
 - Reflection output
 
-<img width="1172" height="384" alt="image" src="https://github.com/user-attachments/assets/e589b140-470f-4ad3-a011-9b9f9eeaac24" />
+<img width="1143" height="573" alt="image" src="https://github.com/user-attachments/assets/8a3ef831-815f-4bc7-aeb1-2df8f36473be" />
+
 
 
