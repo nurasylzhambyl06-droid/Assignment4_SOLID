@@ -1,4 +1,4 @@
-# Assignment 3 — Pharmacy & Prescriptions
+# Assignment 3 — Pharmacy & Prescriptions(assignment4 SOLID)
 ## Java OOP + PostgreSQL (JDBC)
 
 ---
@@ -78,7 +78,7 @@ The database structure and data were verified using **pgAdmin**.
 
 The database connection is handled in the `DatabaseConnection` class using JDBC:
 
-```java
+java
 DriverManager.getConnection(url, user, password)
 
 The PostgreSQL JDBC driver is added via Maven dependency.
@@ -93,7 +93,6 @@ ResultSet
 This approach prevents SQL injection and ensures safe database access.
 
 
----
 
 Repository Layer
 
@@ -107,7 +106,6 @@ MedicineRepository
 Each repository receives a Connection object and performs database operations such as retrieving all records.
 
 
----
 
 Program Execution Flow
 
@@ -124,4 +122,60 @@ Program Execution Flow
 
 
 5. Connection is closed safely
+
+
+# Assignment 4 — SOLID & Advanced OOP (Refactoring)
+
+This project is an extension of **Assignment 3 (Pharmacy & Prescriptions)**.
+The database schema and domain remain unchanged.
+Only the internal Java architecture was refactored.
+
+
+## Architectural Changes
+
+The project was reorganized into a layered structure:
+Main -> Controller -> Service -> Repository -> Database
+
+
+Each layer has a single responsibility and communicates through abstractions.
+
+
+## SOLID Principles Applied
+
+- **SRP** – Controllers delegate logic, services handle business rules, repositories handle data access.
+- **OCP** – New medicine types can be added by extending `BaseMedicine` without changing existing code.
+- **LSP** – `OTCMedicine` and `PrescriptionMedicine` are used via `BaseMedicine` references.
+- **ISP** – Small interfaces (`CrudRepository<T>`, `PricedItem`, `Validatable<T>`) are used.
+- **DIP** – Services depend on repository interfaces, not implementations.
+
+
+## Advanced OOP Features
+
+- **Abstract class**: `BaseMedicine`
+- **Polymorphism**: different medicine types handled as `BaseMedicine`
+- **Generics**: `CrudRepository<T>`
+- **Lambda expressions**: sorting medicines by price
+- **Reflection (RTTI)**: runtime inspection of class methods
+- **DTO**: `MedicineDTO` used as input structure in `Main`
+
+
+## Composition
+
+- `Prescription` contains a list of `PrescriptionItem`
+- `PrescriptionItem` contains a `BaseMedicine`
+
+This represents a has-a relationship in the domain model.
+
+
+## Demonstration
+
+The `Main` class demonstrates:
+- DTO to domain mapping
+- Controller → Service → Repository flow
+- Polymorphism
+- Lambda-based sorting
+- Reflection output
+
+<img width="1172" height="384" alt="image" src="https://github.com/user-attachments/assets/e589b140-470f-4ad3-a011-9b9f9eeaac24" />
+
 
